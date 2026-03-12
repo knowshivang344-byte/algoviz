@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlgoViz — Algorithm Visualizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">◈</span>
+        <span class="logo-name">ALGOVIZ</span>
+        <span class="logo-sub">/ Algorithm Visualizer</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-btn active" data-section="sorting"     onclick="switchSection('sorting')">01 · Sorting</button>
+        <button class="nav-btn"        data-section="graph"       onclick="switchSection('graph')">02 · Graph BFS/DFS</button>
+        <button class="nav-btn"        data-section="pathfinding" onclick="switchSection('pathfinding')">03 · Dijkstra</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- SORTING -->
+  <section class="section active" id="section-sorting">
+    <div class="section-intro">
+      <div class="intro-number">01</div>
+      <div class="intro-body">
+        <h1 class="intro-title">Sorting Algorithms</h1>
+        <p class="intro-desc">Watch every comparison and swap in real time. Adjust size and speed, then hit Visualize.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="tg">
+        <span class="tg-label">ALGORITHM</span>
+        <div class="pill-row">
+          <button class="pill active" id="pill-bubble"    onclick="selectSortAlgo('bubble')">Bubble</button>
+          <button class="pill"        id="pill-insertion" onclick="selectSortAlgo('insertion')">Insertion</button>
+          <button class="pill"        id="pill-selection" onclick="selectSortAlgo('selection')">Selection</button>
+          <button class="pill"        id="pill-merge"     onclick="selectSortAlgo('merge')">Merge</button>
+          <button class="pill"        id="pill-quick"     onclick="selectSortAlgo('quick')">Quick</button>
+        </div>
+      </div>
+      <div class="tg">
+        <span class="tg-label">SIZE &nbsp;<span class="tg-val" id="sizeVal">40</span></span>
+        <input class="slider" type="range" id="sizeSlider" min="10" max="80" value="40"
+               oninput="document.getElementById('sizeVal').textContent=this.value; generateArray()">
+      </div>
+      <div class="tg">
+        <span class="tg-label">SPEED &nbsp;<span class="tg-val" id="speedVal">3</span></span>
+        <input class="slider" type="range" id="speedSlider" min="1" max="5" value="3"
+               oninput="document.getElementById('speedVal').textContent=this.value">
+      </div>
+      <div class="tg btn-row">
+        <button class="btn primary" id="sortRunBtn"  onclick="startSort()">&#9654; Visualize</button>
+        <button class="btn"                           onclick="generateArray()">&#8635; New Array</button>
+        <button class="btn danger"  id="sortStopBtn" onclick="stopSort()" disabled>&#9632; Stop</button>
+      </div>
+    </div>
+    <div class="viz-card">
+      <div class="viz-topbar">
+        <div class="stat-chip" id="sortAlgoName">Bubble Sort</div>
+        <div class="stat-chip" id="statComparisons">Comparisons: 0</div>
+        <div class="stat-chip" id="statSwaps">Swaps: 0</div>
+        <div class="stat-chip" id="sortStatus">Ready</div>
+        <div class="legend">
+          <span class="leg"><span class="dot" style="background:#c8d0e0"></span>Unsorted</span>
+          <span class="leg"><span class="dot" style="background:#f59e0b"></span>Comparing</span>
+          <span class="leg"><span class="dot" style="background:#f43f5e"></span>Swapping</span>
+          <span class="leg"><span class="dot" style="background:#10b981"></span>Sorted</span>
+          <span class="leg"><span class="dot" style="background:#818cf8"></span>Pivot</span>
+        </div>
+      </div>
+      <canvas id="sortCanvas"></canvas>
+    </div>
+    <div class="complexity-grid">
+      <div class="cx-card active" id="cx-bubble">
+        <div class="cx-title">Bubble Sort</div>
+        <div class="cx-row"><span>Best</span><code>O(n)</code></div>
+        <div class="cx-row"><span>Average</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Worst</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Space</span><code>O(1)</code></div>
+        <div class="cx-badge">Stable · In-place</div>
+      </div>
+      <div class="cx-card" id="cx-insertion">
+        <div class="cx-title">Insertion Sort</div>
+        <div class="cx-row"><span>Best</span><code>O(n)</code></div>
+        <div class="cx-row"><span>Average</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Worst</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Space</span><code>O(1)</code></div>
+        <div class="cx-badge">Stable · Adaptive</div>
+      </div>
+      <div class="cx-card" id="cx-selection">
+        <div class="cx-title">Selection Sort</div>
+        <div class="cx-row"><span>Best</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Average</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Worst</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Space</span><code>O(1)</code></div>
+        <div class="cx-badge">Unstable · In-place</div>
+      </div>
+      <div class="cx-card" id="cx-merge">
+        <div class="cx-title">Merge Sort</div>
+        <div class="cx-row"><span>Best</span><code>O(n log n)</code></div>
+        <div class="cx-row"><span>Average</span><code>O(n log n)</code></div>
+        <div class="cx-row"><span>Worst</span><code>O(n log n)</code></div>
+        <div class="cx-row"><span>Space</span><code>O(n)</code></div>
+        <div class="cx-badge">Stable · Divide &amp; Conquer</div>
+      </div>
+      <div class="cx-card" id="cx-quick">
+        <div class="cx-title">Quick Sort</div>
+        <div class="cx-row"><span>Best</span><code>O(n log n)</code></div>
+        <div class="cx-row"><span>Average</span><code>O(n log n)</code></div>
+        <div class="cx-row"><span>Worst</span><code>O(n²)</code></div>
+        <div class="cx-row"><span>Space</span><code>O(log n)</code></div>
+        <div class="cx-badge">Unstable · In-place</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRAPH -->
+  <section class="section" id="section-graph">
+    <div class="section-intro">
+      <div class="intro-number">02</div>
+      <div class="intro-body">
+        <h1 class="intro-title">Graph Traversal</h1>
+        <p class="intro-desc">BFS explores level-by-level using a queue. DFS dives deep using a stack.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="tg">
+        <span class="tg-label">ALGORITHM</span>
+        <div class="pill-row">
+          <button class="pill active" id="pill-bfs" onclick="selectGraphAlgo('bfs')">BFS — Breadth First</button>
+          <button class="pill"        id="pill-dfs" onclick="selectGraphAlgo('dfs')">DFS — Depth First</button>
+        </div>
+      </div>
+      <div class="tg">
+        <span class="tg-label">SPEED &nbsp;<span class="tg-val" id="gSpeedVal">3</span></span>
+        <input class="slider" type="range" id="gSpeedSlider" min="1" max="5" value="3"
+               oninput="document.getElementById('gSpeedVal').textContent=this.value">
+      </div>
+      <div class="tg btn-row">
+        <button class="btn primary" onclick="startGraphTraversal()">&#9654; Start from Node 0</button>
+        <button class="btn"         onclick="buildGraph()">&#8635; New Graph</button>
+        <button class="btn danger"  onclick="stopGraph()">&#9632; Stop</button>
+      </div>
+    </div>
+    <div class="graph-layout">
+      <div class="viz-card" style="flex:1;min-width:0">
+        <div class="viz-topbar">
+          <div class="stat-chip" id="gAlgoChip">BFS</div>
+          <div class="stat-chip" id="gVisited">Visited: 0</div>
+          <div class="stat-chip" id="gFrontier">Queue: []</div>
+          <div class="stat-chip" id="gStatus">Click ▶ to start</div>
+          <div class="legend">
+            <span class="leg"><span class="dot" style="background:#1e3050"></span>Unvisited</span>
+            <span class="leg"><span class="dot" style="background:#f59e0b"></span>Queued</span>
+            <span class="leg"><span class="dot" style="background:#818cf8"></span>Visiting</span>
+            <span class="leg"><span class="dot" style="background:#10b981"></span>Done</span>
+          </div>
+        </div>
+        <canvas id="graphCanvas"></canvas>
+      </div>
+      <div class="side-panel">
+        <div class="panel-block">
+          <div class="panel-label">TRAVERSAL LOG</div>
+          <div class="tlog" id="tlog"><span class="tlog-empty">Run to see log…</span></div>
+        </div>
+        <div class="panel-block">
+          <div class="panel-label">PSEUDOCODE</div>
+          <pre class="pseudocode" id="pseudocode"></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIJKSTRA -->
+  <section class="section" id="section-pathfinding">
+    <div class="section-intro">
+      <div class="intro-number">03</div>
+      <div class="intro-body">
+        <h1 class="intro-title">Dijkstra's Algorithm</h1>
+        <p class="intro-desc">Draw walls, move start/end, generate a maze — then find the shortest path.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="tg">
+        <span class="tg-label">TOOL</span>
+        <div class="pill-row">
+          <button class="pill active" id="tool-wall"  onclick="setTool('wall')">&#9999; Wall</button>
+          <button class="pill"        id="tool-erase" onclick="setTool('erase')">&#9723; Erase</button>
+          <button class="pill"        id="tool-start" onclick="setTool('start')">&#9654; Start</button>
+          <button class="pill"        id="tool-end"   onclick="setTool('end')">&#9711; End</button>
+        </div>
+      </div>
+      <div class="tg">
+        <span class="tg-label">SPEED &nbsp;<span class="tg-val" id="pSpeedVal">3</span></span>
+        <input class="slider" type="range" id="pSpeedSlider" min="1" max="5" value="3"
+               oninput="document.getElementById('pSpeedVal').textContent=this.value">
+      </div>
+      <div class="tg btn-row">
+        <button class="btn primary" onclick="startDijkstra()">&#9654; Run Dijkstra</button>
+        <button class="btn"         onclick="generateMaze()">&#8862; Maze</button>
+        <button class="btn"         onclick="clearPath()">&#8635; Clear Path</button>
+        <button class="btn danger"  onclick="clearGrid()">&#10005; Clear All</button>
+      </div>
+    </div>
+    <div class="viz-card">
+      <div class="viz-topbar">
+        <div class="stat-chip">Dijkstra's Algorithm</div>
+        <div class="stat-chip" id="pVisited">Visited: 0</div>
+        <div class="stat-chip" id="pLength">Path: —</div>
+        <div class="stat-chip" id="pStatus">Draw walls then run</div>
+        <div class="legend">
+          <span class="leg"><span class="dot" style="background:#0f1a2e"></span>Empty</span>
+          <span class="leg"><span class="dot" style="background:#334155"></span>Wall</span>
+          <span class="leg"><span class="dot" style="background:#10b981"></span>Start</span>
+          <span class="leg"><span class="dot" style="background:#f43f5e"></span>End</span>
+          <span class="leg"><span class="dot" style="background:#1d4ed8"></span>Visited</span>
+          <span class="leg"><span class="dot" style="background:#f59e0b"></span>Path</span>
+        </div>
+      </div>
+      <canvas id="pathCanvas"></canvas>
+    </div>
+  </section>
+
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/sorting.js"></script>
+  <script src="assets/js/graph.js"></script>
+  <script src="assets/js/pathfinding.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
