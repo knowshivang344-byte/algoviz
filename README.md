@@ -6,6 +6,11 @@
 ![Canvas](https://img.shields.io/badge/HTML5-Canvas-orange?style=flat-square)
 ![No Dependencies](https://img.shields.io/badge/dependencies-none-green?style=flat-square)
 
+
+
+![algoviz Dashboard](Algo.png)
+
+
 ## Features
 
 ### 01 · Sorting (5 algorithms)
